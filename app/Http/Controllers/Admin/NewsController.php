@@ -18,7 +18,7 @@ class NewsController extends Controller
       //Validation
       $this->validate($request, News::$rules);
       $news = new News;
-      $form = $request->file('image')->store('public/image');
+      $form = $request->all();
       /*フォームから画像が送信されてきたら保存して、$news->image_pathに
       画像のパスを保存する*/
       if(isset($form['image'])) {
@@ -34,7 +34,7 @@ class NewsController extends Controller
       //データベースに保存する
       $news->fill($form);
       $news->save();
-      
+
       return redirect('admin/news/create');
     }
 }
