@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\News;
+use App\History;
+use Carbon\Carbon;
 
 class NewsController extends Controller
 {
@@ -18,6 +20,7 @@ class NewsController extends Controller
       //Validation
       $this->validate($request, News::$rules);
       $news = new News;
+      // ↓配列の形に変えてる
       $form = $request->all();
       /*フォームから画像が送信されてきたら保存して、$news->image_pathに
       画像のパスを保存する*/
@@ -74,9 +77,16 @@ class NewsController extends Controller
         $news->image_path = null;
       }
       unset($news_form['_token']);
+      unset($news_form['image']);
       unset($news_form['remove']);
       // 該当するデータを上書きして保存する
       $news->fill($news_form)->save();
+      // 編集履歴
+      $history = new History;
+      $history->news_id = $news->id;
+      $history->edited_at = Carbon::now();
+      $history->save();
+
       return redirect('admin/news/');
     }
     public function delete(Request $request)
